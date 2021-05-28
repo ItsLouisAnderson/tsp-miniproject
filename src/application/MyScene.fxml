@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="590.0" prefWidth="757.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.AppController">
+   <children>
+      <Pane fx:id="controlPane" layoutY="505.0" prefHeight="85.0" prefWidth="757.0">
+         <children>
+            <Button fx:id="startButton" layoutX="29.0" layoutY="34.0" mnemonicParsing="false" text="Start" />
+            <Button fx:id="clearButton" layoutX="96.0" layoutY="34.0" mnemonicParsing="false" text="Clear" />
+            <Label layoutX="167.0" layoutY="14.0" text="Algorithm" />
+            <ComboBox fx:id="comboBox" layoutX="167.0" layoutY="34.0" prefWidth="150.0" />
+         </children>
+      </Pane>
+      <Pane fx:id="graphPane" prefHeight="500.0" prefWidth="757.0" />
+   </children>
+</AnchorPane>

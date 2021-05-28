@@ -3,13 +3,16 @@ package model;
 import java.lang.Math;
 
 public class City {
+	private static int cityNo = 1;
 	private String name;
 	private float x;
 	private float y;
 	
 	public City(float x, float y) {
+		this.name = "City" + String.valueOf(cityNo);
 		this.x = x;
 		this.y = y;
+		cityNo++;
 	}
 	public City(String name, float x, float y) {
 		this.name = name;
