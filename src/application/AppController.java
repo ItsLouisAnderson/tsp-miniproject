@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.control.CheckBox;
 
 import algorithm.*;
 
@@ -23,6 +24,12 @@ public class AppController{
 
     @FXML
     private Button startButton;
+    
+    @FXML
+    private Button nextButton;
+    
+    @FXML
+    private CheckBox stepCheck;
 
     @FXML
     private ComboBox<SolveStrategy> comboBox = new ComboBox<SolveStrategy>();
