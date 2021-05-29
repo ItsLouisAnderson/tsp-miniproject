@@ -2,47 +2,50 @@ package model;
 
 import java.lang.Math;
 
-public class City {
+import javafx.scene.shape.Circle;
+import javafx.scene.control.Label;
+import javafx.beans.property.StringProperty;
+import javafx.beans.property.SimpleStringProperty;
+
+public class City extends Circle{
 	private static int cityNo = 1;
-	private String name;
-	private float x;
-	private float y;
+	private StringProperty name = new SimpleStringProperty();
+	private Label cityLabel = new Label();
 	
-	public City(float x, float y) {
-		this.name = "City" + String.valueOf(cityNo);
-		this.x = x;
-		this.y = y;
+	public City(double x, double y) {
+		this.name.setValue("City" + String.valueOf(cityNo));
+		this.setCenterX(x);
+		this.setCenterY(y);
+		this.setRadius(5);
+		this.cityLabel.textProperty().bind(name);
+		this.cityLabel.setLayoutX(x + 5);
+		this.cityLabel.setLayoutY(y);
 		cityNo++;
 	}
-	public City(String name, float x, float y) {
-		this.name = name;
-		this.x = x;
-		this.y = y;
+	public City(String name, double x, double y) {
+		this.name.setValue(name);
+		this.setCenterX(x);
+		this.setCenterY(y);
+		this.setRadius(5);
+		this.cityLabel.setText(this.name + " ");
+		this.cityLabel.setLayoutX(x + 5);
+		this.cityLabel.setLayoutY(y);
 	}
 
 	public String getName() {
-		return name;
+		return name.getValue();
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name.setValue(name);
 	}
 	
-	public float getX() {
-		return x;
+	public double getDistance(City c) {
+		return Math.sqrt(Math.pow(this.getCenterX() - c.getCenterX(), 2)
+						+ Math.pow(this.getCenterY() - c.getCenterY(), 2));
 	}
-	public void setX(float x) {
-		this.x = x;
-	}
-	
-	public float getY() {
-		return y;
-	}
-	public void setY(float y) {
-		this.y = y;
+	public Label getCityLabel() {
+		return cityLabel;
 	}
 	
-	public float getDistance(City c) {
-		return (float)Math.sqrt(Math.pow(this.x - c.x, 2) + Math.pow(this.y - c.y, 2));
-	}
 }

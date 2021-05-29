@@ -12,4 +12,7 @@ public class Graph {
 	public void addCity(City c) {
 		this.cityList.add(c);
 	}
+	public void removeCity(City c) {
+		this.cityList.remove(c);
+	}
 }
