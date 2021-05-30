@@ -48,4 +48,8 @@ public class City extends Circle{
 		return cityLabel;
 	}
 	
+	public static void resetCityNo() {
+		cityNo = 1;
+	}
+	
 }

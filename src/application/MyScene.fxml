@@ -10,8 +10,8 @@
    <children>
       <Pane fx:id="controlPane" layoutY="505.0" prefHeight="85.0" prefWidth="757.0">
          <children>
-            <Button fx:id="startButton" layoutX="29.0" layoutY="34.0" mnemonicParsing="false" text="Start" />
-            <Button fx:id="clearButton" layoutX="96.0" layoutY="34.0" mnemonicParsing="false" text="Clear" />
+            <Button fx:id="startButton" layoutX="29.0" layoutY="34.0" mnemonicParsing="false" onAction="#onStart" text="Start" />
+            <Button fx:id="clearButton" layoutX="96.0" layoutY="34.0" mnemonicParsing="false" onAction="#onClear" text="Clear" />
             <Label layoutX="167.0" layoutY="14.0" text="Algorithm" />
             <ComboBox fx:id="comboBox" layoutX="167.0" layoutY="34.0" prefWidth="150.0" />
             <CheckBox fx:id="stepCheck" layoutX="332.0" layoutY="39.0" mnemonicParsing="false" text="Step-by-step" />

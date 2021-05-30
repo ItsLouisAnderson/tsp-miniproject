@@ -11,6 +11,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextInputDialog;
+import javafx.event.ActionEvent;
 import javafx.scene.paint.*;
 
 import model.*;
@@ -46,11 +47,18 @@ public class AppController{
 	
 	Graph graph = new Graph();
 
+	//---------------------------------------------------
+	// Scene Initialization
+	//---------------------------------------------------
     public void initialize(){
     	comboBox.setItems(strategies);
     	comboBox.getSelectionModel().selectFirst();
+    	nextButton.setVisible(false);
     }
     
+    //---------------------------------------------------
+  	// When left click on pane -> create and add city
+  	//---------------------------------------------------
     public void onGraphPressed(MouseEvent mouseEvent) {
     	if (mouseEvent.isPrimaryButtonDown()) {
     		graphPane.getChildren().add(createAndAddCity(mouseEvent));        	
@@ -62,6 +70,8 @@ public class AppController{
     	graphPane.getChildren().add(city.getCityLabel());
         	
         city.setOnMousePressed(e -> onCityPressed(e, city));
+        
+        // If right click on city label -> prompt to rename
         city.getCityLabel().setOnMousePressed(e -> {
         	if (e.isSecondaryButtonDown()) {
         		TextInputDialog dialog = new TextInputDialog();
@@ -76,12 +86,34 @@ public class AppController{
         
         return city;
     }
+    
+    //---------------------------------------------------
+  	// When right click on city -> remove city
+  	//---------------------------------------------------
     private void onCityPressed(MouseEvent e, City c) {
     	if (e.isSecondaryButtonDown()) {
     		graphPane.getChildren().remove(c);
     		graphPane.getChildren().remove(c.getCityLabel());
     		graph.removeCity(c);
     	}
+    }
+    
+    //---------------------------------------------------
+  	// When click start
+  	//---------------------------------------------------
+    public void onStart(ActionEvent event) {
+    	startButton.setDisable(true);
+    	if (stepCheck.isSelected()) {
+    		nextButton.setVisible(true);
+    	}
+    }
+    
+    //---------------------------------------------------
+  	// When click clear -> remove all cities
+  	//---------------------------------------------------
+    public void onClear(ActionEvent event) {
+    	graphPane.getChildren().clear();
+    	City.resetCityNo();
     }
     
 }
