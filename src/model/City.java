@@ -1,6 +1,7 @@
 package model;
 
 import java.lang.Math;
+import java.util.List;
 
 import javafx.scene.shape.Circle;
 import javafx.scene.control.Label;
@@ -8,6 +9,7 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class City extends Circle{
+	public static final int MAX_NUMBER_OF_CITIES = 10;
 	private static int cityNo = 1;
 	private StringProperty name = new SimpleStringProperty();
 	private Label cityLabel = new Label();
@@ -50,6 +52,16 @@ public class City extends Circle{
 	
 	public static void resetCityNo() {
 		cityNo = 1;
+	}
+	
+	public int degree(List<Path> pathList) {
+		int degree = 0;
+		for (Path p: pathList) {
+			if (p.contains(this)) {
+				degree++;
+			}
+		}
+		return degree;
 	}
 	
 }

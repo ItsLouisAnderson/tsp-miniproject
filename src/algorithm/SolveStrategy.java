@@ -34,4 +34,6 @@ public abstract class SolveStrategy {
 		
 		return t;
 	}
+	
+	public abstract double solve(Graph g);
 }

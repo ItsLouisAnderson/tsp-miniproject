@@ -54,6 +54,7 @@ public class AppController{
     	comboBox.setItems(strategies);
     	comboBox.getSelectionModel().selectFirst();
     	nextButton.setVisible(false);
+    	startButton.setDisable(true);
     }
     
     //---------------------------------------------------
@@ -61,7 +62,8 @@ public class AppController{
   	//---------------------------------------------------
     public void onGraphPressed(MouseEvent mouseEvent) {
     	if (mouseEvent.isPrimaryButtonDown()) {
-    		graphPane.getChildren().add(createAndAddCity(mouseEvent));        	
+    		graphPane.getChildren().add(createAndAddCity(mouseEvent));
+    		startButton.setDisable(false);
     	}
     }
     private Node createAndAddCity(MouseEvent mouseEvent) {
@@ -106,6 +108,14 @@ public class AppController{
     	if (stepCheck.isSelected()) {
     		nextButton.setVisible(true);
     	}
+    	if (comboBox.getValue().equals(s1)) {
+    		graphPane.getChildren().addAll(((MSTSolve)s1).mst(graph.getCityList()));
+    	}
+    	else if (comboBox.getValue().equals(s2)) {
+    		System.out.println(s2.solve(graph));
+    	}
+    	
+    	startButton.setDisable(false);
     }
     
     //---------------------------------------------------
@@ -113,6 +123,7 @@ public class AppController{
   	//---------------------------------------------------
     public void onClear(ActionEvent event) {
     	graphPane.getChildren().clear();
+    	graph.getCityList().clear();
     	City.resetCityNo();
     }
     
