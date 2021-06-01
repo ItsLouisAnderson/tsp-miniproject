@@ -1,6 +1,9 @@
 package algorithm;
 
 import java.util.List;
+
+import javafx.scene.paint.Color;
+
 import java.util.ArrayList;
 
 import model.*;
@@ -86,6 +89,37 @@ public class MSTSolve extends SolveStrategy{
 				result.add(c);
 			}
 		}
+		return result;
+	}
+	
+	public List<Path> perfectMatching (List<City> oddVertices){
+		/************************************************************************************
+		  find a perfect matching M in the subgraph O using greedy algorithm but not minimum
+		*************************************************************************************/
+		List<Path> result = new ArrayList<Path>();
+		
+		City first, closest;
+		double length;
+
+		// for each odd node
+		while (!oddVertices.isEmpty()) {
+			first = oddVertices.get(0);
+		    length = Integer.MAX_VALUE;
+		    closest = null;
+		    for (City it : oddVertices.subList(1, oddVertices.size())) {
+		      // if this node is closer than the current closest, update closest and length
+		      if (first.getDistance(it) < length) {
+		        length = first.getDistance(it);
+		        closest = it;
+		      }
+		    } // two nodes are matched, end of list reached
+		    Path newMatching = new Path(first, closest);
+		    newMatching.setStroke(Color.RED);
+		    result.add(newMatching);
+		    oddVertices.remove(first);
+		    oddVertices.remove(closest);
+		}
+		
 		return result;
 	}
 	public double solve(Graph graph) {

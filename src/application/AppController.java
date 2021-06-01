@@ -1,6 +1,7 @@
 package application;
 
 import java.util.Optional;
+import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.input.MouseEvent;
@@ -13,6 +14,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextInputDialog;
 import javafx.event.ActionEvent;
 import javafx.scene.paint.*;
+import javafx.scene.shape.Line;
 
 import model.*;
 import algorithm.*;
@@ -109,9 +111,18 @@ public class AppController{
     		nextButton.setVisible(true);
     	}
     	if (comboBox.getValue().equals(s1)) {
-    		graphPane.getChildren().addAll(((MSTSolve)s1).mst(graph.getCityList()));
+    		List<Path> mst = ((MSTSolve)s1).mst(graph.getCityList());
+    		List<City> oddCities = ((MSTSolve)s1).oddVertices(graph.getCityList(), mst);
+    		List<Path> matching = ((MSTSolve)s1).perfectMatching(oddCities);
+    		graphPane.getChildren().removeIf((Node t) -> t.getClass().getSimpleName().equals("Path"));
+    		graphPane.getChildren().addAll(mst);
+    		for (City i: oddCities) {
+    			i.setFill(Color.BLUE);
+    		}
+    		graphPane.getChildren().addAll(matching);
     	}
     	else if (comboBox.getValue().equals(s2)) {
+    		graphPane.getChildren().removeIf((Node t) -> t.getClass().getSimpleName().equals("Path"));
     		System.out.println(s2.solve(graph));
     	}
     	
