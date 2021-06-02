@@ -26,4 +26,17 @@ public class Path extends Line{
 	public double getWeight() {
 		return this.weight;
 	}
+	
+	public boolean contains(City c) {
+		if (c.equals(this.start) || c.equals(this.end)) {
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return this.start + "-" + this.end;
+	}
+
 }

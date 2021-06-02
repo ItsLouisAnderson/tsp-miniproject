@@ -18,6 +18,9 @@
             <Button fx:id="nextButton" layoutX="667.0" layoutY="34.0" mnemonicParsing="false" text="Next &gt;&gt;" />
          </children>
       </Pane>
-      <Pane fx:id="graphPane" onMousePressed="#onGraphPressed" prefHeight="500.0" prefWidth="757.0" />
+      <Pane fx:id="graphPane" onMousePressed="#onGraphPressed" prefHeight="500.0" prefWidth="757.0">
+         <children>
+            <Label fx:id="stepLabel" layoutX="14.0" layoutY="465.0" text="Label" />
+         </children></Pane>
    </children>
 </AnchorPane>
