@@ -1,7 +1,7 @@
 package algorithm;
 
 import java.util.List;
-
+import java.util.ArrayDeque;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public class MSTSolve extends SolveStrategy{
 		return this.name;
 	}
 	
-	int minKey(double key[], Boolean mstSet[])
+	private int minKey(double key[], Boolean mstSet[])
     {
         // Initialize min value
         double min = Integer.MAX_VALUE;
@@ -97,16 +97,18 @@ public class MSTSolve extends SolveStrategy{
 		  find a perfect matching M in the subgraph O using greedy algorithm but not minimum
 		*************************************************************************************/
 		List<Path> result = new ArrayList<Path>();
+		List<City> oddVerticesCopy = new ArrayList<City>();
+		oddVerticesCopy.addAll(oddVertices);
 		
 		City first, closest;
 		double length;
 
 		// for each odd node
-		while (!oddVertices.isEmpty()) {
-			first = oddVertices.get(0);
+		while (!oddVerticesCopy.isEmpty()) {
+			first = oddVerticesCopy.get(0);
 		    length = Integer.MAX_VALUE;
 		    closest = null;
-		    for (City it : oddVertices.subList(1, oddVertices.size())) {
+		    for (City it : oddVerticesCopy.subList(1, oddVerticesCopy.size())) {
 		      // if this node is closer than the current closest, update closest and length
 		      if (first.getDistance(it) < length) {
 		        length = first.getDistance(it);
@@ -116,9 +118,66 @@ public class MSTSolve extends SolveStrategy{
 		    Path newMatching = new Path(first, closest);
 		    newMatching.setStroke(Color.RED);
 		    result.add(newMatching);
-		    oddVertices.remove(first);
-		    oddVertices.remove(closest);
+		    oddVerticesCopy.remove(first);
+		    oddVerticesCopy.remove(closest);
 		}
+		
+		return result;
+	}
+	
+	public List<City> eulerTour(List<City> cityList, List<Path> mst, List<Path> perfectMatching){
+		List<City> circuit = new ArrayList<City>();
+		
+		List<Path> tempPathList = new ArrayList<Path>();
+		tempPathList.addAll(mst);
+		tempPathList.addAll(perfectMatching);
+		
+		ArrayDeque<City> stack = new ArrayDeque<City>();
+		City start = cityList.get(0);
+		stack.push(start);
+		
+		while(!stack.isEmpty()) {
+			City v = stack.peek();
+			if (v.degree(tempPathList) == 0) {
+				circuit.add(v);
+				stack.pop();
+			}
+			else {
+				for (int i = 0; i < tempPathList.size(); i++) {
+					Path p = tempPathList.get(i);
+					if (p.contains(v)) {
+						if (p.getStartCity().equals(v)) {
+							stack.push(p.getEndCity());
+						}
+						else{
+							stack.push(p.getStartCity());
+						}
+						tempPathList.remove(p);
+						break;
+					}
+				}
+			}
+		}
+		
+		return circuit;
+	}
+	
+	public List<Path> makeHamiltonian(List <City> eulerTour){
+		ArrayDeque<City> visited = new ArrayDeque<City>();
+		List<City> hamiltonian = new ArrayList<City>();
+		
+		for (City c: eulerTour) {
+			if (!visited.contains(c)) {
+				visited.push(c);
+				hamiltonian.add(c);
+			}
+		}
+		
+		List<Path> result = new ArrayList<Path>();
+		for (int i = 0; i < hamiltonian.size()-1; i++) {
+			result.add(new Path(hamiltonian.get(i), hamiltonian.get(i+1)));
+		}
+		result.add(new Path(hamiltonian.get(hamiltonian.size()-1), hamiltonian.get(0)));
 		
 		return result;
 	}

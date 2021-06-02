@@ -64,4 +64,9 @@ public class City extends Circle{
 		return degree;
 	}
 	
+	@Override
+	public String toString() {
+		return this.name.getValue();
+	}
+	
 }

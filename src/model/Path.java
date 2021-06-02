@@ -34,5 +34,9 @@ public class Path extends Line{
 		return false;
 	}
 	
+	@Override
+	public String toString() {
+		return this.start + "-" + this.end;
+	}
 
 }

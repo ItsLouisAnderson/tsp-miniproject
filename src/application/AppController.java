@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.Node;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
@@ -15,7 +16,8 @@ import javafx.scene.control.TextInputDialog;
 import javafx.event.ActionEvent;
 import javafx.scene.paint.*;
 import javafx.scene.shape.Line;
-
+import javafx.util.Duration;
+import javafx.animation.FillTransition;
 import model.*;
 import algorithm.*;
 
@@ -42,6 +44,9 @@ public class AppController{
     @FXML
     private ComboBox<SolveStrategy> comboBox = new ComboBox<SolveStrategy>();
     
+    @FXML
+    private Label stepLabel;
+    
     SolveStrategy s1 = new MSTSolve();
 	SolveStrategy s2 = new DynamicSolve();
 	SolveStrategy s3 = new NaiveSolve();	
@@ -57,6 +62,7 @@ public class AppController{
     	comboBox.getSelectionModel().selectFirst();
     	nextButton.setVisible(false);
     	startButton.setDisable(true);
+    	stepLabel.setVisible(false);
     }
     
     //---------------------------------------------------
@@ -106,27 +112,57 @@ public class AppController{
   	// When click start
   	//---------------------------------------------------
     public void onStart(ActionEvent event) {
+    	clearAllPaths();
     	startButton.setDisable(true);
     	if (stepCheck.isSelected()) {
     		nextButton.setVisible(true);
+    		stepLabel.setVisible(true);
     	}
     	if (comboBox.getValue().equals(s1)) {
-    		List<Path> mst = ((MSTSolve)s1).mst(graph.getCityList());
-    		List<City> oddCities = ((MSTSolve)s1).oddVertices(graph.getCityList(), mst);
-    		List<Path> matching = ((MSTSolve)s1).perfectMatching(oddCities);
-    		graphPane.getChildren().removeIf((Node t) -> t.getClass().getSimpleName().equals("Path"));
-    		graphPane.getChildren().addAll(mst);
-    		for (City i: oddCities) {
-    			i.setFill(Color.BLUE);
-    		}
-    		graphPane.getChildren().addAll(matching);
+    		onMSTStart();
     	}
     	else if (comboBox.getValue().equals(s2)) {
-    		graphPane.getChildren().removeIf((Node t) -> t.getClass().getSimpleName().equals("Path"));
-    		System.out.println(s2.solve(graph));
+    		onDynamicStart();
     	}
-    	
-    	startButton.setDisable(false);
+    }
+    
+    public void onMSTStart() {
+    	List<Path> mst = ((MSTSolve)s1).mst(graph.getCityList());
+		List<City> oddCities = ((MSTSolve)s1).oddVertices(graph.getCityList(), mst);
+		List<Path> matching = ((MSTSolve)s1).perfectMatching(oddCities);
+		List<City> euler = (((MSTSolve)s1).eulerTour(graph.getCityList(), mst, matching));
+		List<Path> result = (((MSTSolve)s1).makeHamiltonian(euler));
+		
+		if (stepCheck.isSelected()) {
+			stepLabel.setText("Step 1: Find the minimum spanning tree");
+			graphPane.getChildren().addAll(mst);
+			nextButton.setOnAction(e2 -> {
+				stepLabel.setText("Step 2: Find the odd vertices: " + oddCities);
+				for (City i: oddCities) {
+					i.setFill(Color.BLUE);
+				}
+				nextButton.setOnAction(e3 -> {
+					stepLabel.setText("Step 3: Create minimum matching\nA Eulerian path is formed:\n" + euler);
+					graphPane.getChildren().addAll(matching);
+					nextButton.setOnAction(e4 -> {
+						stepLabel.setText("Step 4: Create a Hamiltonian path:\n" + result + "\nTotal distance: " + (float)getTotalWeight(result));
+						clearAllPaths();
+						graphPane.getChildren().addAll(result);
+						nextButton.setVisible(false);
+						startButton.setDisable(false);
+						for (City i: oddCities) {
+							i.setFill(Color.BLACK);
+						}
+					});
+				});
+			});
+		}
+		
+    }
+    
+    public void onDynamicStart() {
+    	graphPane.getChildren().removeIf((Node t) -> t.getClass().getSimpleName().equals("Path"));
+		System.out.println(s2.solve(graph));
     }
     
     //---------------------------------------------------
@@ -138,4 +174,15 @@ public class AppController{
     	City.resetCityNo();
     }
     
+    public void clearAllPaths() {
+    	graphPane.getChildren().removeIf((Node t) -> t.getClass().getSimpleName().equals("Path"));
+    }
+    public double getTotalWeight(List<Path> pathList) {
+    	double result = 0;
+    	for (Path p: pathList) {
+    		result += p.getWeight();
+    	}
+    	return result;
+    }
+ 
 }
