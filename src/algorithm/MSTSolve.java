@@ -10,6 +10,10 @@ import model.*;
 
 public class MSTSolve extends SolveStrategy{
 	private String name = "Minumum Spanning Tree";
+	public List<Path> mst = new ArrayList<Path>();
+	public List<City> oddVertices = new ArrayList<City>();
+	public List<Path> perfectMatching = new ArrayList<Path>();
+	public List<City> eulerTour = new ArrayList<City>();
 	
 	@Override
 	public String toString() {
@@ -31,7 +35,7 @@ public class MSTSolve extends SolveStrategy{
         return min_index;
     }
 	
-	public List<Path> mst(List<City> cityList){
+	private void mst(List<City> cityList){
 		final int V = cityList.size();
 		// Array to store constructed MST
         int parent[] = new int[V];
@@ -75,30 +79,25 @@ public class MSTSolve extends SolveStrategy{
                 }
             }
         }
-        List <Path> mstPath = new ArrayList<Path>();
         for (int i = 1; i < V; i++) {
-        	mstPath.add(new Path(cityList.get(parent[i]), cityList.get(i)));
+        	this.mst.add(new Path(cityList.get(parent[i]), cityList.get(i)));
         }
-        return mstPath;
 	}
 	
-	public List<City> oddVertices (List<City> cityList, List<Path> mst){
-		List<City> result = new ArrayList<City>();
+	private void oddVertices (List<City> cityList){
 		for (City c: cityList) {
-			if (c.degree(mst) % 2 != 0) {
-				result.add(c);
+			if (c.degree(this.mst) % 2 != 0) {
+				this.oddVertices.add(c);
 			}
 		}
-		return result;
 	}
 	
-	public List<Path> perfectMatching (List<City> oddVertices){
+	private void perfectMatching (){
 		/************************************************************************************
 		  find a perfect matching M in the subgraph O using greedy algorithm but not minimum
 		*************************************************************************************/
-		List<Path> result = new ArrayList<Path>();
 		List<City> oddVerticesCopy = new ArrayList<City>();
-		oddVerticesCopy.addAll(oddVertices);
+		oddVerticesCopy.addAll(this.oddVertices);
 		
 		City first, closest;
 		double length;
@@ -117,20 +116,16 @@ public class MSTSolve extends SolveStrategy{
 		    } // two nodes are matched, end of list reached
 		    Path newMatching = new Path(first, closest);
 		    newMatching.setStroke(Color.RED);
-		    result.add(newMatching);
+		    this.perfectMatching.add(newMatching);
 		    oddVerticesCopy.remove(first);
 		    oddVerticesCopy.remove(closest);
 		}
-		
-		return result;
 	}
 	
-	public List<City> eulerTour(List<City> cityList, List<Path> mst, List<Path> perfectMatching){
-		List<City> circuit = new ArrayList<City>();
-		
+	private void eulerTour(List<City> cityList){
 		List<Path> tempPathList = new ArrayList<Path>();
-		tempPathList.addAll(mst);
-		tempPathList.addAll(perfectMatching);
+		tempPathList.addAll(this.mst);
+		tempPathList.addAll(this.perfectMatching);
 		
 		ArrayDeque<City> stack = new ArrayDeque<City>();
 		City start = cityList.get(0);
@@ -139,7 +134,7 @@ public class MSTSolve extends SolveStrategy{
 		while(!stack.isEmpty()) {
 			City v = stack.peek();
 			if (v.degree(tempPathList) == 0) {
-				circuit.add(v);
+				this.eulerTour.add(v);
 				stack.pop();
 			}
 			else {
@@ -158,11 +153,9 @@ public class MSTSolve extends SolveStrategy{
 				}
 			}
 		}
-		
-		return circuit;
 	}
 	
-	public List<Path> makeHamiltonian(List <City> eulerTour){
+	private void makeHamiltonian(){
 		ArrayDeque<City> visited = new ArrayDeque<City>();
 		List<City> hamiltonian = new ArrayList<City>();
 		
@@ -173,15 +166,29 @@ public class MSTSolve extends SolveStrategy{
 			}
 		}
 		
-		List<Path> result = new ArrayList<Path>();
 		for (int i = 0; i < hamiltonian.size()-1; i++) {
-			result.add(new Path(hamiltonian.get(i), hamiltonian.get(i+1)));
+			this.result.add(new Path(hamiltonian.get(i), hamiltonian.get(i+1)));
 		}
-		result.add(new Path(hamiltonian.get(hamiltonian.size()-1), hamiltonian.get(0)));
+		this.result.add(new Path(hamiltonian.get(hamiltonian.size()-1), hamiltonian.get(0)));
+
+	}
+	private void reset() {
+		this.mst.clear();
+		this.oddVertices.clear();
+		this.perfectMatching.clear();
+		this.eulerTour.clear();
+		this.result.clear();
+	}
+	
+	public void solve(Graph graph) {
+		this.reset(); //clear previous results
 		
-		return result;
+		List<City> cityList = graph.getCityList();
+		this.mst(cityList);
+		this.oddVertices(cityList);
+		this.perfectMatching();
+		this.eulerTour(cityList);
+		this.makeHamiltonian();
 	}
-	public double solve(Graph graph) {
-		return 0;
-	}
+	
 }

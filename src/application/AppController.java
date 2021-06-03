@@ -63,6 +63,14 @@ public class AppController{
     	nextButton.setVisible(false);
     	startButton.setDisable(true);
     	stepLabel.setVisible(false);
+    	comboBox.setOnAction(e -> {
+    		if (comboBox.getValue().equals(s2) || comboBox.getValue().equals(s3)) {
+    			stepCheck.setDisable(true);
+    		}
+    		else {
+    			stepCheck.setDisable(false);
+    		}
+    	});
     }
     
     //---------------------------------------------------
@@ -113,56 +121,65 @@ public class AppController{
   	//---------------------------------------------------
     public void onStart(ActionEvent event) {
     	clearAllPaths();
-    	startButton.setDisable(true);
-    	if (stepCheck.isSelected()) {
-    		nextButton.setVisible(true);
-    		stepLabel.setVisible(true);
-    	}
+    	stepLabel.setVisible(true);
     	if (comboBox.getValue().equals(s1)) {
     		onMSTStart();
     	}
     	else if (comboBox.getValue().equals(s2)) {
     		onDynamicStart();
     	}
+    	else {
+    		onNaiveStart();
+    	}
     }
     
     public void onMSTStart() {
-    	List<Path> mst = ((MSTSolve)s1).mst(graph.getCityList());
-		List<City> oddCities = ((MSTSolve)s1).oddVertices(graph.getCityList(), mst);
-		List<Path> matching = ((MSTSolve)s1).perfectMatching(oddCities);
-		List<City> euler = (((MSTSolve)s1).eulerTour(graph.getCityList(), mst, matching));
-		List<Path> result = (((MSTSolve)s1).makeHamiltonian(euler));
+    	s1.solve(graph);
 		
 		if (stepCheck.isSelected()) {
+			nextButton.setVisible(true);
+			startButton.setDisable(true);
 			stepLabel.setText("Step 1: Find the minimum spanning tree");
-			graphPane.getChildren().addAll(mst);
+			graphPane.getChildren().addAll(((MSTSolve)s1).mst);
 			nextButton.setOnAction(e2 -> {
-				stepLabel.setText("Step 2: Find the odd vertices: " + oddCities);
-				for (City i: oddCities) {
+				stepLabel.setText("Step 2: Find the odd vertices: " + ((MSTSolve)s1).oddVertices);
+				for (City i: ((MSTSolve)s1).oddVertices) {
 					i.setFill(Color.BLUE);
 				}
 				nextButton.setOnAction(e3 -> {
-					stepLabel.setText("Step 3: Create minimum matching\nA Eulerian path is formed:\n" + euler);
-					graphPane.getChildren().addAll(matching);
+					stepLabel.setText("Step 3: Create minimum matching\nA Eulerian path is formed:\n" + ((MSTSolve)s1).eulerTour);
+					graphPane.getChildren().addAll(((MSTSolve)s1).perfectMatching);
 					nextButton.setOnAction(e4 -> {
-						stepLabel.setText("Step 4: Create a Hamiltonian path:\n" + result + "\nTotal distance: " + (float)getTotalWeight(result));
+						stepLabel.setText("Step 4: Create a Hamiltonian path:\n" + "Total distance: " + (float)getTotalWeight(s1.result) + "\nFinished!");
 						clearAllPaths();
-						graphPane.getChildren().addAll(result);
+						graphPane.getChildren().addAll(s1.result);
 						nextButton.setVisible(false);
-						startButton.setDisable(false);
-						for (City i: oddCities) {
+						for (City i: ((MSTSolve)s1).oddVertices) {
 							i.setFill(Color.BLACK);
 						}
+						startButton.setDisable(false);
 					});
 				});
 			});
 		}
-		
+		else {
+			stepLabel.setText("Total distance: " + (float)getTotalWeight(s1.result));
+			graphPane.getChildren().addAll(s1.result);
+		}
     }
     
     public void onDynamicStart() {
-    	graphPane.getChildren().removeIf((Node t) -> t.getClass().getSimpleName().equals("Path"));
-		System.out.println(s2.solve(graph));
+    	clearAllPaths();
+    	s2.solve(graph);
+    	graphPane.getChildren().addAll(s2.result);
+    	stepLabel.setText("Total distance: " + (float)getTotalWeight(s2.result));
+    }
+    
+    public void onNaiveStart() {
+    	clearAllPaths();
+    	s3.solve(graph);
+    	graphPane.getChildren().addAll(s3.result);
+    	stepLabel.setText("Total distance: " + (float)getTotalWeight(s3.result));
     }
     
     //---------------------------------------------------
@@ -174,8 +191,15 @@ public class AppController{
     	City.resetCityNo();
     }
     
-    public void clearAllPaths() {
+    private void clearAllPaths() {
     	graphPane.getChildren().removeIf((Node t) -> t.getClass().getSimpleName().equals("Path"));
+    }
+    private void resetFill() {
+    	for (Node t: graphPane.getChildren()) {
+    		if (t.getClass().getSimpleName().equals("City")) {
+    			((City)t).setFill(Color.BLACK);
+    		}
+    	}
     }
     public double getTotalWeight(List<Path> pathList) {
     	double result = 0;

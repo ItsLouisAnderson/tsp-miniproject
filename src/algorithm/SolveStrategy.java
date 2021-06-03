@@ -1,39 +1,40 @@
 package algorithm;
 
-import javafx.animation.Transition;
-import javafx.animation.FillTransition;
-import javafx.scene.paint.Color;
-import javafx.util.Duration;
+import java.util.ArrayList;
+import java.util.List;
+
 import model.*;
 
 public abstract class SolveStrategy {
-	private static final Duration TRANS_DURATION = Duration.millis(500);
+	public List<Path> result = new ArrayList<Path>();
+	public Double [][] path_2d;
 	
-	public Path createPath(City c1, City c2) {
-		Path p = new Path(c1, c2);
-		
-		return p;
+    public void create_2d(Graph graph){
+        path_2d = new Double[graph.getCityList().size()][graph.getCityList().size()];
+        for(int i = 0; i < graph.getCityList().size(); i++){
+            for(int j = 0; j < graph.getCityList().size(); j++){
+
+                if (i == j){
+                    continue;
+                }
+
+                if (i>j){
+                    path_2d[i][j] = path_2d[j][i];
+                    continue;
+                }
+
+                path_2d[i][j] = graph.getCityList().get(i).getDistance(graph.getCityList().get(j));
+            }
+        }
+    }
+    
+    protected double getLength(List<Path> pathList) {
+		double length = 0;
+		for (Path p: pathList) {
+			length += p.getWeight();
+		}
+		return length;
 	}
 	
-	public FillTransition colorPath(Path p, Color cl) {
-		FillTransition t = new FillTransition();
-		t.setShape(p);
-		t.setFromValue((Color)p.getFill());
-		t.setToValue(cl);
-		t.setDuration(TRANS_DURATION);
-		
-		return t;
-	}
-	
-	public FillTransition colorCity(City c, Color cl) {
-		FillTransition t = new FillTransition();
-		t.setShape(c);
-		t.setFromValue((Color)c.getFill());
-		t.setToValue(cl);
-		t.setDuration(TRANS_DURATION);
-		
-		return t;
-	}
-	
-	public abstract double solve(Graph g);
+	public abstract void solve(Graph g);
 }
